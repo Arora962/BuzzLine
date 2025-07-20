@@ -1,8 +1,17 @@
+// App.tsx
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Alert, Platform, PermissionsAndroid, ScrollView, TouchableOpacity } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
 import { initializeMessaging, diagnosticCheck } from './firebase.config';
 import TroubleshootingScreen from './TroubleshootingScreen';
+
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+import NotificationScreen from './screens/NotificationScreen';
+import { navigationRef, navigate } from './utils/NavigationService'; 
+
+const Stack = createNativeStackNavigator();
 
 async function requestUserPermission() {
   const authStatus = await messaging().requestPermission();
@@ -24,7 +33,7 @@ async function requestUserPermission() {
   }
 }
 
-export default function App() {
+function HomeScreen({ navigation }: any) {
   const [token, setToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -36,23 +45,16 @@ export default function App() {
         setIsLoading(true);
         setError(null);
 
-        // Run diagnostic check first
-        console.log('Running Firebase diagnostics...');
         const diagnostics = await diagnosticCheck();
-        
-        // Request permissions first
         await requestUserPermission();
-
-        // Initialize Firebase messaging with comprehensive error handling
         const fcmToken = await initializeMessaging();
-        
+
         if (fcmToken) {
           setToken(fcmToken);
           console.log('Successfully retrieved FCM token');
         } else {
           throw new Error('Token is null or undefined');
         }
-        
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
         console.error('Error initializing app:', err);
@@ -64,6 +66,7 @@ export default function App() {
 
     initializeApp();
 
+    // Foreground message handler
     const unsubscribe = messaging().onMessage(async remoteMessage => {
       Alert.alert(
         remoteMessage.notification?.title ?? 'BuzzLine',
@@ -74,9 +77,7 @@ export default function App() {
     return unsubscribe;
   }, []);
 
-  if (showTroubleshooting) {
-    return <TroubleshootingScreen />;
-  }
+  if (showTroubleshooting) return <TroubleshootingScreen />;
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -109,70 +110,62 @@ export default function App() {
   );
 }
 
+export default function App() {
+  useEffect(() => {
+    messaging().onNotificationOpenedApp(remoteMessage => {
+      console.log('Notification caused app to open from background:', remoteMessage.notification);
+      navigate('Notification');
+    });
+
+    messaging().getInitialNotification().then(remoteMessage => {
+      if (remoteMessage) {
+        console.log('Notification caused app to open from quit state:', remoteMessage.notification);
+        navigate('Notification');
+      }
+    });
+  }, []);
+
+  return (
+    <NavigationContainer ref={navigationRef}>
+      <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Notification" component={NotificationScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#fff',
+    flexGrow: 1, justifyContent: 'center', alignItems: 'center', padding: 20, backgroundColor: '#fff'
   },
   title: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    color: '#1E88E5',
-    marginBottom: 10,
+    fontSize: 26, fontWeight: 'bold', color: '#1E88E5', marginBottom: 10
   },
   subtitle: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 30,
+    fontSize: 16, color: '#666', marginBottom: 30
   },
   label: {
-    fontSize: 14,
-    color: '#444',
-    marginBottom: 10,
+    fontSize: 14, color: '#444', marginBottom: 10
   },
   token: {
-    fontSize: 12,
-    color: '#000',
-    padding: 10,
-    backgroundColor: '#f2f2f2',
-    borderRadius: 6,
+    fontSize: 12, color: '#000', padding: 10, backgroundColor: '#f2f2f2', borderRadius: 6
   },
   error: {
-    fontSize: 12,
-    color: '#e53e3e',
-    padding: 10,
-    backgroundColor: '#fed7d7',
-    borderRadius: 6,
-    textAlign: 'center',
-    marginBottom: 10,
+    fontSize: 12, color: '#e53e3e', padding: 10, backgroundColor: '#fed7d7',
+    borderRadius: 6, textAlign: 'center', marginBottom: 10
   },
   loading: {
-    fontSize: 12,
-    color: '#1E88E5',
-    padding: 10,
-    backgroundColor: '#e3f2fd',
-    borderRadius: 6,
-    textAlign: 'center',
+    fontSize: 12, color: '#1E88E5', padding: 10, backgroundColor: '#e3f2fd',
+    borderRadius: 6, textAlign: 'center'
   },
   troubleshootButton: {
-    backgroundColor: '#ff9800',
-    padding: 12,
-    borderRadius: 6,
-    marginBottom: 20,
+    backgroundColor: '#ff9800', padding: 12, borderRadius: 6, marginBottom: 20
   },
   troubleshootButtonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '600',
-    textAlign: 'center',
+    color: '#fff', fontSize: 14, fontWeight: '600', textAlign: 'center'
   },
   helpText: {
-    fontSize: 12,
-    color: '#666',
-    textAlign: 'center',
-    fontStyle: 'italic',
-  },
+    fontSize: 12, color: '#666', textAlign: 'center', fontStyle: 'italic'
+  }
 });
