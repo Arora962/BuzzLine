@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>BuzzLine Notification Trigger</title>
+  <style>
+    * {box-sizing: border-box;}
+    body { font-family: sans-serif; background: #f7f7f7; padding: 30px; text-align: center; }
+    form { margin: 20px auto; padding: 20px; background: #fff; width: 300px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    input, select, button { margin: 10px 0; padding: 10px; width: 100%; }
+    button { background: #1e88e5; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    h1 { color: #1e88e5; }
+  </style>
+</head>
+<body>
+  <h1>🚀 BuzzLine Trigger</h1>
+  <form method="POST" action="/send">
+    <select name="type">
+      <option value="misc">Normal Notification</option>
+      <option value="call">Call Notification</option>
+    </select>
+    <input type="text" name="title" placeholder="Notification Title" required />
+    <input type="text" name="body" placeholder="Notification Body" required />
+    <button type="submit">Send</button>
+  </form>
+</body>
+</html>

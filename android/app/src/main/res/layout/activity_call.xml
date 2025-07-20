@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="#1E88E5"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/caller_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Incoming Call"
+        android:textSize="28sp"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="10dp" />
+
+    <TextView
+        android:id="@+id/caller_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="BuzzLine Call"
+        android:textSize="18sp"
+        android:textColor="#E3F2FD"
+        android:gravity="center"
+        android:layout_marginBottom="40dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="40dp">
+
+        <Button
+            android:id="@+id/reject_button"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:text="Reject"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:background="@drawable/reject_button_background"
+            android:layout_marginEnd="40dp" />
+
+        <Button
+            android:id="@+id/accept_button"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:text="Accept"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:background="@drawable/accept_button_background"
+            android:layout_marginStart="40dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -31,6 +31,24 @@ async function requestUserPermission() {
       Alert.alert('BuzzLine needs notification permission!');
     }
   }
+
+  // Request system alert window permission for call overlay
+  if (Platform.OS === 'android') {
+    try {
+      // Note: SYSTEM_ALERT_WINDOW permission needs to be handled differently
+      // It requires user to manually enable it in system settings
+      Alert.alert(
+        'Permission Required',
+        'To show incoming calls on lock screen, please enable "Display over other apps" permission in Settings > Apps > BuzzLine > Special app access.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Open Settings', onPress: () => Linking.openSettings() }
+        ]
+      );
+    } catch (err) {
+      console.warn('Error with system alert permission:', err);
+    }
+  }
 }
 
 function openAppNotificationSettings() {
@@ -96,7 +114,7 @@ function HomeScreen({ navigation }: any) {
         style={styles.button}
         onPress={openAppNotificationSettings}
       >
-        <Text style={styles.buttonText}>Manage Notification Settings</Text>
+        <Text style={styles.buttonText}>Manage App Permissions & Settings</Text>
       </TouchableOpacity>
 
       {error && (
@@ -181,12 +199,21 @@ const styles = StyleSheet.create({
     color: '#fff', fontSize: 14, fontWeight: '600', textAlign: 'center'
   },
   helpText: {
-    fontSize: 12, color: '#666', textAlign: 'center', fontStyle: 'italic'
+    fontSize: 12, 
+    color: '#666', 
+    textAlign: 'center', 
+    fontStyle: 'italic'
   },
   button: {
-    backgroundColor: '#4CAF50', padding: 12, borderRadius: 6, marginBottom: 20
+    backgroundColor: '#4CAF50', 
+    padding: 12, 
+    borderRadius: 6, 
+    marginBottom: 20
   },
   buttonText: {
-    color: '#fff', fontSize: 14, fontWeight: '600', textAlign: 'center'
+    color: '#fff', 
+    fontSize: 14, 
+    fontWeight: '600', 
+    textAlign: 'center'
   }
 });
