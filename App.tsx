@@ -1,6 +1,6 @@
 // App.tsx
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Alert, Platform, PermissionsAndroid, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Alert, Platform, PermissionsAndroid, ScrollView, TouchableOpacity, Linking } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
 import { initializeMessaging, diagnosticCheck } from './firebase.config';
 import TroubleshootingScreen from './TroubleshootingScreen';
@@ -30,6 +30,14 @@ async function requestUserPermission() {
     if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
       Alert.alert('BuzzLine needs notification permission!');
     }
+  }
+}
+
+function openAppNotificationSettings() {
+  if (Platform.OS === 'android') {
+    Linking.openSettings(); // Triggers app's notification settings
+  } else {
+    Alert.alert('Unsupported', 'This feature is only supported on Android.');
   }
 }
 
@@ -83,7 +91,14 @@ function HomeScreen({ navigation }: any) {
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>📞 BuzzLine</Text>
       <Text style={styles.subtitle}>React Native Push Notification Demo</Text>
-      
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={openAppNotificationSettings}
+      >
+        <Text style={styles.buttonText}>Manage Notification Settings</Text>
+      </TouchableOpacity>
+
       {error && (
         <TouchableOpacity 
           style={styles.troubleshootButton}
@@ -167,5 +182,11 @@ const styles = StyleSheet.create({
   },
   helpText: {
     fontSize: 12, color: '#666', textAlign: 'center', fontStyle: 'italic'
+  },
+  button: {
+    backgroundColor: '#4CAF50', padding: 12, borderRadius: 6, marginBottom: 20
+  },
+  buttonText: {
+    color: '#fff', fontSize: 14, fontWeight: '600', textAlign: 'center'
   }
 });
